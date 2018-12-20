@@ -30,7 +30,7 @@ class Utils:
     # Work in progress
     @staticmethod
     def read_xml_input_data(self):
-        tree = ET.parse('C:\\meta-behave\\Resources\\test_data.xml')
+        tree = ET.parse('C:\\test_data.xml')
         root = tree.getroot()
 
         for elem in root:
