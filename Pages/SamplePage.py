@@ -2,6 +2,7 @@
 
 from TestSDK.Element import Element
 from TestSDK.Utils import Utils
+from selenium.webdriver.common.keys import Keys
 
 
 class SamplePage:
@@ -22,5 +23,5 @@ class SamplePage:
 
     def search(self, item):
         self.searchField.type(item)
-        self.overPage.click()
-        self.searchButton.click()
+        self.searchField.send_keys(Keys.RETURN)
+

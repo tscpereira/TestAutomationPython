@@ -117,3 +117,7 @@ class Element(object):
 
     def deselect_by_text(self, text):
         return self.get_select_element().deselect_by_visible_text(text)
+
+    def send_keys(self, keys):
+        element = self.get_element()
+        return element.send_keys(keys)
