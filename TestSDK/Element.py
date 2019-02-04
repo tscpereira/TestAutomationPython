@@ -46,13 +46,18 @@ class Element(object):
         except Exception:
             return False
 
-    def is_visible(self):
+    def is_visible(self, validate = True):
         element = self.get_element()
         # noinspection PyBroadException
         try:
             element.is_displayed()
+            if validate:
+                print("PASSED '" + self.name + "' was displayed")
             return True
         except Exception:
+            if validate:
+                print("FAILED '" + self.name + "' was not displayed")
+                raise
             return False
 
     def is_enabled(self):

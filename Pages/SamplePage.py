@@ -7,18 +7,20 @@ from selenium.webdriver.common.keys import Keys
 
 class SamplePage:
 
-    context, searchButton, searchField, overPage = None, None, None, None
+    context, searchButton, searchField, overPage, spanTitle = None, None, None, None, None
     utils = None
 
     seletorSearchButton = "//*[@id='tsf']/div[2]/div/div[3]/center/input[1]"
     seletorSearchField = "//*[@class='gLFyf gsfi']"
     seletorOverPage = "//*[@id='lga']"
+    seletorSpanTitle = "//span[text()='%s']"
 
     def __init__(self, context):
         self.context = context
         self.searchField = Element(self.seletorSearchField, context, "Search field")
         self.searchButton = Element(self.seletorSearchButton, context, "Search button")
         self.overPage = Element(self.seletorOverPage, context, "Over page")
+        self.spanTitle = Element(self.seletorSpanTitle, context, "Span Title")
         self.utils = Utils(context)
 
     def search(self, item):

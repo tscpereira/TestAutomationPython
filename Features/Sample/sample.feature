@@ -9,7 +9,7 @@ Feature: Test Web Page / Google API
   Scenario Outline: Search on Google
      Given Im in the google page
       When Search by "<item>"
-      Then Check the results
+      Then Check the results for "<item>"
 
      Examples: item
        | item      |

@@ -1,26 +1,73 @@
 from nose.tools import *
 
 
-def IsEqual(actual, expected, name, errorMessage = None):
-    print("Validating '" + name + "' Expected [" + expected + "] Actual [" + actual + "]")
-    assert_equal(actual, expected, errorMessage)
+def __treat_failure(fail, ex):
+    if fail:
+        raise ex
+    else:
+        start_index = ex.args[0].find("FAILED")
+        print(ex.args[0][start_index:None])
 
-def IsNotEqual(actual, notEqual, name, errorMessage=None):
-    print("Validating '" + name + "' Actual [" + actual + "]")
-    assert_not_equal(actual, notEqual, errorMessage)
 
-def IsIn(container, expectedText, errorMessage = None):
-    print("Validating if [" + expectedText + "] is in [" + container + "]")
-    assert_in(expectedText, container, errorMessage)
+def IsEqual(actual, expected, name, fail = False):
+    try:
+        assert_equal(actual, expected, "FAILED '%s' Expected [%s] Actual [%s]" % (name, expected, actual))
+        print("PASSED '" + name + "' Expected [" + expected + "] Actual [" + actual + "]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
 
-def IsNotIn(container, expectedText, errorMessage = None):
-    print("Validating if [" + expectedText + "] is not in [" + container + "]")
-    assert_not_in(expectedText, container, errorMessage)
 
-def IsTrue(object, errorMessage=None):
-    print("Validating if [" + object + "] is true")
-    assert_true(object, errorMessage)
+def IsNotEqual(first, second, name, fail = False):
+    try:
+        assert_not_equal(first, second, "FAILED '%s' First [%s] is equal to Second [%s]" % (name, first, second))
+        print("PASSED '" + name + "' Value [" + first + "] is not equal to [ " + second + "]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
 
-def IsFalse(object, errorMessage=None):
-    print("Validating if [" + object + "] is false")
-    assert_false(object, errorMessage)
+
+def IsIn(container, value, name, fail = False):
+    try:
+        assert_in(value, container, "FAILED '%s' Value [%s] is not in [%s]" % (name, value, container))
+        print("PASSED '" + name + "' Value [" + value + "] is in [" + container + "]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
+
+
+def IsNotIn(container, value, name, fail = False):
+    try:
+        assert_not_in(value, "FAILED '%s' Value [%s] is in [%s]" % (name, value, container))
+        print("PASSED '" + name + "' Value [" + value + "] is not in [" + container + "]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
+
+
+def IsTrue(object, name, fail = False):
+    try:
+        assert_true(object, "FAILED '" + name + "' Expected [True] Actual [False]")
+        print("PASSED '" + name + "' Value is True")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
+
+
+def IsFalse(object, name, fail = False):
+    try:
+        assert_false(object, "FAILED '" + name + "' Expected [False] Actual [True]")
+        print("PASSED '" + name + "' Value is False")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
+
+
+def IsNotNone(object, name, fail = False):
+    try:
+        assert_is_not_none(object, "FAILED '" + name + "' Expected [NotNone] Actual [None]")
+        print("PASSED '" + name + "' Expected [NotNone] Actual [" + object + "]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)
+
+
+def IsNone(object, name, fail = False):
+    try:
+        assert_is_none(object, "FAILED '" + name + "' Expected [None] Actual [" + object + "]")
+        print("PASSED '" + name + "' Expected [None] Actual [None]")
+    except AssertionError as ex:
+        __treat_failure(fail, ex)

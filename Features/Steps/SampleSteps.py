@@ -5,6 +5,7 @@ from Pages.SamplePage import SamplePage
 from TestSDK import APISDK
 from TestSDK.Utils import Utils
 from collections import namedtuple
+from TestSDK import Validate
 import json
 
 
@@ -34,11 +35,13 @@ def search_item(context, item):
         raise
 
 
-@then('Check the results')
-def search_item(context):
+@then('Check the results for "{item}"')
+def search_item(context, item):
     try:
         print("- Checking the results")
         utils.take_screenshot("SearchResult.jpg")
+        samplepage.spanTitle.seletor = samplepage.seletorSpanTitle % (item)
+        samplepage.spanTitle.is_visible()
     except Exception:
         print("Unable to complete the tests step:")
         raise
