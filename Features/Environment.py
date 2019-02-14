@@ -71,7 +71,7 @@ def after_all(context):
     else:
         result = "PASSED"
 
-    print("Saving the test output at folder '" + path + "'")
+    print("Saving the test output at folder '" + os.path.abspath(path) + "'")
     sys.stdout = Logger(path).close()
     os.rename(path + "\TestLog.txt", path + "\TestLog_" + result + ".txt")
 

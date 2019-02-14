@@ -46,27 +46,32 @@ class Element(object):
         except Exception:
             return False
 
-    def is_visible(self, validate = True):
+    def is_visible(self, fail = True):
         element = self.get_element()
         # noinspection PyBroadException
         try:
             element.is_displayed()
-            if validate:
+            if fail:
                 print("PASSED '" + self.name + "' was displayed")
             return True
         except Exception:
-            if validate:
+            if fail:
                 print("FAILED '" + self.name + "' was not displayed")
                 raise
             return False
 
-    def is_enabled(self):
+    def is_enabled(self, fail = True):
         element = self.get_element()
         # noinspection PyBroadException
         try:
             element.is_enabled()
+            if fail:
+                print("PASSED '" + self.name + "' was enabled")
             return True
         except Exception:
+            if fail:
+                print("FAILED '" + self.name + "' was not enabled")
+                raise
             return False
 
     def wait_for_visible(self, timeout=20):
