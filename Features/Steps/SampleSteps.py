@@ -40,7 +40,7 @@ def search_item(context, item):
     try:
         print("- Checking the results")
         utils.take_screenshot("SearchResult.jpg")
-        samplepage.spanTitle.seletor = samplepage.seletorSpanTitle % (item)
+        samplepage.spanTitle.seletor = samplepage.spanTitle.seletor % (item)
         samplepage.spanTitle.is_visible()
     except Exception:
         print("Unable to complete the tests step:")
