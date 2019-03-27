@@ -5,7 +5,6 @@ from Pages.SamplePage import SamplePage
 from TestSDK import APISDK
 from TestSDK.Utils import Utils
 from collections import namedtuple
-from TestSDK import Validate
 import json
 
 
@@ -39,7 +38,7 @@ def search_item(context, item):
 def search_item(context, item):
     try:
         print("- Checking the results")
-        utils.take_screenshot("SearchResult.jpg")
+        utils.take_screenshot("SearchResult")
         samplepage.spanTitle.seletor = samplepage.spanTitle.seletor % (item)
         samplepage.spanTitle.is_visible()
     except Exception:

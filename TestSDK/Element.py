@@ -8,11 +8,6 @@ from selenium.webdriver.support import expected_conditions as ec
 
 class Element(object):
 
-    seletor = None
-    context = None
-    name = None
-    by = None
-
     def __init__(self, seletor, context, name=None, by=By.XPATH):
         self.seletor = seletor
         self.context = context

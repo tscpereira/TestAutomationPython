@@ -28,6 +28,7 @@ def before_all(context):
         raise Exception("Unable to start the test, folder already exist: '" + absolutepath + "'")
 
     sys.stdout = Logger(path)
+    print("Test Execution Date: " + str(datetime.datetime.today().strftime('%d/%m/%Y %H:%M:%S')))
 
 
 def before_feature(context, feature):
