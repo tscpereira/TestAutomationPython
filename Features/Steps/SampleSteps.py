@@ -4,6 +4,7 @@ from behave import *
 from Pages.SamplePage import SamplePage
 from TestSDK import APISDK
 from TestSDK.Utils import Utils
+from TestSDK import Log as log
 from collections import namedtuple
 import json
 
@@ -16,33 +17,33 @@ def access_googe(context):
     utils = Utils(context)
     samplepage = SamplePage(context)
 
-    print("- Acessing google")
+    log.message("Acessing google")
     try:
         context.browser.get("http://www.google.com")
     except Exception:
-        print("Unable to complete the tests step:")
+        log.message("Unable to complete the tests step:")
         raise
 
 
 @when('Search by "{item}"')
 def search_item(context, item):
     try:
-        print("- Searching for: '" + item + "'")
+        log.message("Searching for: '" + item + "'")
         samplepage.search(item)
     except Exception:
-        print("Unable to complete the tests step:")
+        log.message("Unable to complete the tests step:")
         raise
 
 
 @then('Check the results for "{item}"')
 def search_item(context, item):
     try:
-        print("- Checking the results")
+        log.message("Checking the results")
         utils.take_screenshot("SearchResult")
         samplepage.spanTitle.seletor = samplepage.spanTitle.seletor % (item)
         samplepage.spanTitle.is_visible()
     except Exception:
-        print("Unable to complete the tests step:")
+        log.message("Unable to complete the tests step:")
         raise
 
 
@@ -62,9 +63,9 @@ def run_google_request(context):
         dtoresponse = json.loads(response.content, object_hook=lambda d: namedtuple('X', d.keys())(*d.values()))
 
         # In this print we are accessing the property "lat" from response
-        print ("Lat: " + str(dtoresponse.results[0].geometry.location.lat))
+        log.message ("Lat: " + str(dtoresponse.results[0].geometry.location.lat))
         assert dtoresponse.status == "OK", "The request status is NOT OK. \nCurrent status: '" \
                                      + str(response.__getattribute__('status')) + "'"
     except Exception:
-        print("Unable to complete the tests step:")
+        log.log_message("Unable to complete the tests step:")
         raise

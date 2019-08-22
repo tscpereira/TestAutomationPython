@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
+from TestSDK import Log as log
 
 
 class Element(object):
@@ -21,7 +22,7 @@ class Element(object):
         try:
             return WebDriverWait(self.context.browser, timeout).until(ec.presence_of_element_located((self.by, self.seletor)))
         except Exception:
-            print("Element '" + str(self.name) + "' not found")
+            log.message("Element '" + str(self.name) + "' not found")
             raise
 
     def get_select_element(self):
@@ -47,11 +48,11 @@ class Element(object):
         try:
             element.is_displayed()
             if fail:
-                print("PASSED '" + self.name + "' was displayed")
+                log.message("[PASSED] '" + self.name + "' was displayed")
             return True
         except Exception:
             if fail:
-                print("FAILED '" + self.name + "' was not displayed")
+                log.message("[FAILED] '" + self.name + "' was not displayed")
                 raise
             return False
 
@@ -61,11 +62,11 @@ class Element(object):
         try:
             element.is_enabled()
             if fail:
-                print("PASSED '" + self.name + "' was enabled")
+                log.message("[PASSED] '" + self.name + "' was enabled")
             return True
         except Exception:
             if fail:
-                print("FAILED '" + self.name + "' was not enabled")
+                log.message("[FAILED] '" + self.name + "' was not enabled")
                 raise
             return False
 
@@ -73,7 +74,7 @@ class Element(object):
         try:
             WebDriverWait(self.context.browser, timeout).until(ec.visibility_of_element_located((self.by, self.seletor)))
         except Exception:
-            print("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
+            log.message("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
             raise
 
     def wait_for_visible_and_click(self, timeout=20):
@@ -81,7 +82,7 @@ class Element(object):
             element = WebDriverWait(self.context.browser, timeout).until(ec.element_to_be_clickable((self.by, self.seletor)))
             element.click()
         except Exception:
-            print("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
+            log.log_message("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
             raise
 
     # TODO: Inlcude By option thru parameter instead of hardcoded find_element_by_xpath
