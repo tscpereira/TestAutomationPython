@@ -4,11 +4,14 @@
 from selenium import webdriver
 from TestSDK.Logger import Logger
 from appium import webdriver as AppiumWebDriver
+from os.path import basename
 import os
 import time
 import datetime
 import sys
+import zipfile
 
+zipOutput = True
 execution_failed = False
 webDriver = None
 webDriverMobile = None
@@ -76,6 +79,16 @@ def after_all(context):
     sys.stdout = Logger(path).close()
     os.rename(path + "\TestLog.txt", path + "\TestLog_" + result + ".txt")
 
+    if zipOutput:
+        zpFile = zipfile.ZipFile(path + '\\Output.zip', 'w')
+        files = __getFiles()
+
+        for file in files:
+            if not '.zip' in file:
+                zpFile.write(file, basename(file), compress_type=zipfile.ZIP_DEFLATED)
+                os.remove(file)
+        zpFile.close()
+
 
 def before_tag(context, tag):
     global webDriver
@@ -115,3 +128,10 @@ def before_tag(context, tag):
 def after_tag(context, tag):
     if tag.startswith("UI"):
         pass
+
+def __getFiles():
+    files = []
+    for r, d, f in os.walk(path):
+        for file in f:
+            files.append(os.path.join(r, file))
+    return files
