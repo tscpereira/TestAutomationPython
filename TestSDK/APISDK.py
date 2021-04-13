@@ -1,4 +1,3 @@
-# Meta 2018
 # encoding: utf-8
 
 import requests
