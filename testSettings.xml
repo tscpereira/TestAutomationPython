@@ -1,0 +1,9 @@
+<testSettings>
+	<appiumSettings>
+		<apkPath>C:\Users\Thiago.Pereira\Downloads\EriBank.apk</apkPath>
+		<appPackage>com.experitest.ExperiBank</appPackage>
+		<appActivity>LoginActivity</appActivity>
+		<platformName>Android</platformName>
+		<deviceName>Nexus_6</deviceName>
+	</appiumSettings>
+</testSettings>

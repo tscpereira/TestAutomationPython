@@ -3,8 +3,8 @@
 
 from selenium import webdriver
 from TestSDK.Logger import Logger
-from appium import webdriver as AppiumWebDriver
 from os.path import basename
+from TestSDK.Utils import Utils
 import os
 import time
 import datetime
@@ -15,7 +15,9 @@ zipOutput = True
 execution_failed = False
 webDriver = None
 webDriverMobile = None
+webDriverAppium = None
 path = ""
+dc = {}
 
 
 def before_all(context):
@@ -60,7 +62,7 @@ def after_feature(context, feature):
     print("\n------------- Finishing Feature Test Execution --------------")
     count = 1
     for scenario in feature.scenarios:
-        print (str(count) + "º Scenario: '" + str(scenario.name) + "': " + str(scenario.status))
+        print(str(count) + "º Scenario: '" + str(scenario.name) + "': " + str(scenario.status))
         count += 1
     print("-------------------------------------------------------------")
 
@@ -70,6 +72,8 @@ def after_all(context):
         webDriver.quit()
     if webDriverMobile is not None:
         webDriverMobile.quit()
+    if webDriverAppium is not None:
+        webDriverAppium.quit()
     if execution_failed:
         result = "FAILED"
     else:
@@ -81,7 +85,7 @@ def after_all(context):
 
     if zipOutput:
         zpFile = zipfile.ZipFile(path + '\\Output.zip', 'w')
-        files = __getFiles()
+        files = __get_files()
 
         for file in files:
             if not '.zip' in file:
@@ -93,6 +97,8 @@ def after_all(context):
 def before_tag(context, tag):
     global webDriver
     global webDriverMobile
+    global webDriverAppium
+
     if tag.startswith("UI-WEB-MOBILE"):
         if webDriverMobile is None:
             mobile_emulation = {"deviceName": "Galaxy S5"}
@@ -103,20 +109,17 @@ def before_tag(context, tag):
         else:
             context.browser = webDriverMobile
     elif tag.startswith("UI-APP-MOBILE"):
-        # TODO: Implement integration with APPIUM here (In progress)
-        app = "app apk path here"
-        context.driver = AppiumWebDriver.Remote(
-            command_executor='http://127.0.0.1:4723/wd/hub',
-            desired_capabilities={
-                'app': app,
-                'platformName': 'Android',
-                'platformVersion': '4.4',
-                'deviceName': None,
-                'udid': '01a135891395669f',
-                'appActivity': '.HomeActivity',
-                'appPackage': 'com.imdb.mobile'
-            }
-        )
+        if webDriverAppium is None:
+            utils = Utils(context)
+            dc['app'] = utils.read_test_settings_info("apkPath")
+            dc['appPackage'] = utils.read_test_settings_info("appPackage")
+            dc['appActivity'] = utils.read_test_settings_info("appActivity")
+            dc['platformName'] = utils.read_test_settings_info("platformName")
+            dc['deviceName'] = utils.read_test_settings_info("deviceName")
+            context.browser = webdriver.Remote("http://localhost:4723/wd/hub", dc)
+            webDriverAppium = context.browser
+        else:
+            context.browser = webDriverAppium
     elif tag.startswith("UI"):
         if webDriver is None:
             context.browser = webdriver.Chrome()
@@ -129,7 +132,8 @@ def after_tag(context, tag):
     if tag.startswith("UI"):
         pass
 
-def __getFiles():
+
+def __get_files():
     files = []
     for r, d, f in os.walk(path):
         for file in f:

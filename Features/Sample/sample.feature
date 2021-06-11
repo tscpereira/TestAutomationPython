@@ -16,3 +16,7 @@ Feature: Test Web Page / Google API
        | Selenium  |
        | Python    |
        | Behave    |
+
+  @TestSample003 @All @UI-APP-MOBILE
+  Scenario: Test App Login
+    Given I need to perform login in a mobile application

@@ -10,7 +10,7 @@ import json
 
 
 @given('Im in the google page')
-def access_googe(context):
+def access_google(context):
 
     global samplepage
     global utils
@@ -67,5 +67,19 @@ def run_google_request(context):
         assert dtoresponse.status == "OK", "The request status is NOT OK. \nCurrent status: '" \
                                      + str(response.__getattribute__('status')) + "'"
     except Exception:
-        log.log_message("Unable to complete the tests step:")
+        log.message("Unable to complete the tests step:")
+        raise
+
+
+@given('I need to perform login in a mobile application')
+def app_login(context):
+    log.message("Performing login")
+    try:
+        if len(context.browser.find_elements_by_xpath("//*[@text='OK']")) > 0:
+            context.browser.find_element_by_xpath("//*[@text='OK']").click();
+        context.browser.find_element_by_xpath("//*[@text='Username']").send_keys('company')
+        context.browser.find_element_by_xpath("//*[@text='Password']").send_keys('company')
+        context.browser.find_element_by_xpath("//*[@text='Login']").click()
+    except Exception:
+        log.message("Unable to complete the tests step:")
         raise
