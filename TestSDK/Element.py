@@ -171,5 +171,4 @@ class Element(object):
 
     def __check_and_switch_context(self, context_view):
         if context_view is not None and context_view not in self.context.browser.context:
-            #if context_view not in self.context.browser.context:
             self.context.browser.switch_to.context(context_view)
