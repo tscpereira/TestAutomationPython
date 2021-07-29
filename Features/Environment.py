@@ -1,7 +1,12 @@
 # encoding: utf-8
-
+import threading
+from logging import exception
 
 from selenium import webdriver
+from appium import webdriver as appiumDriver
+from appium.webdriver.appium_service import AppiumService
+from selenium.common.exceptions import WebDriverException
+
 from TestSDK.Logger import Logger
 from os.path import basename
 from TestSDK.Utils import Utils
@@ -10,6 +15,8 @@ import time
 import datetime
 import sys
 import zipfile
+import platform
+import subprocess as sp
 
 zipOutput = True
 execution_failed = False
@@ -17,11 +24,16 @@ webDriver = None
 webDriverMobile = None
 webDriverAppium = None
 path = ""
+currentOs = ""
 dc = {}
 
 
 def before_all(context):
     global path
+    global currentOs
+
+    currentOs = platform.platform()
+
     path = os.getcwd() + "\\..\\TestResults"
     date = datetime.datetime.fromtimestamp(time.time()).strftime('%Y%m%d%H%M%S')
     path = path + "\\Execution_" + date
@@ -110,13 +122,44 @@ def before_tag(context, tag):
             context.browser = webDriverMobile
     elif tag.startswith("UI-APP-MOBILE"):
         if webDriverAppium is None:
+            # Setting Appium capabilities
             utils = Utils(context)
+            device = utils.read_test_settings_info("device")
             dc['app'] = utils.read_test_settings_info("apkPath")
             dc['appPackage'] = utils.read_test_settings_info("appPackage")
             dc['appActivity'] = utils.read_test_settings_info("appActivity")
             dc['platformName'] = utils.read_test_settings_info("platformName")
             dc['deviceName'] = utils.read_test_settings_info("deviceName")
-            context.browser = webdriver.Remote("http://localhost:4723/wd/hub", dc)
+            dc['autoGrantPermissions'] = True
+            if device == "fisico":
+                dc['udid'] = utils.read_test_settings_info("udidfisico")
+            else:
+                dc['udid'] = utils.read_test_settings_info("udidemulador")
+
+            #AppiumAutoStart
+            #appium_service = AppiumService()
+            #appium_service.start(args=['-p 4723', '--log-timestamp', '--log', 'C:\\TestAutomationPython\\appium.log'])
+
+            # Starting Android Emulator
+            if device == "emulador":
+                if currentOs.__contains__("Windows"):
+                    os.popen('cmd /c "emulator @Pixel_3a_API_30_x86"')
+
+            # Starting Appium Driver
+            attempts = 30
+            attempt = 0
+            while attempt < attempts:
+                try:
+                    context.browser = appiumDriver.Remote("http://localhost:4723/wd/hub", dc)
+                    break
+                except WebDriverException as ex:
+                    print("Waiting for Appium start at Android Emulator/Device...")
+                    time.sleep(5)
+                    attempt = attempt + 1
+                    if attempt == attempts:
+                        print ("After '" + str(attempts) + "' the Android Emulator/Device persist unreachable")
+                        raise ex
+
             webDriverAppium = context.browser
         else:
             context.browser = webDriverAppium

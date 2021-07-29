@@ -1,18 +1,21 @@
 # encoding: utf-8
+import time
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
+from appium.webdriver.common.mobileby import MobileBy
 from TestSDK import Log as log
 
 
 class Element(object):
 
-    def __init__(self, seletor, context, name=None, by=By.XPATH):
+    def __init__(self, seletor, context, name=None, by=By.XPATH, mobileBy = MobileBy.XPATH, context_view = ""):
         self.seletor = seletor
         self.context = context
         self.by = by
+        self.mobileBy = mobileBy
         if name is not None:
             self.name = name
         else:
@@ -25,6 +28,17 @@ class Element(object):
             log.message("Element '" + str(self.name) + "' not found")
             raise
 
+    def get_element_appium(self, timeout=20):
+        try:
+            return WebDriverWait(self.context.browser, timeout).until(
+                ec.element_to_be_clickable((self.mobileBy, self.seletor)))
+        except Exception:
+            log.message("Element '" + str(self.name) + "' not found")
+            raise
+
+    def find(self):
+        return self.context.browser.find_element_by_xpath(self.seletor)
+
     def get_select_element(self):
         element = self.get_element()
         element.wait_for_visible()
@@ -32,7 +46,19 @@ class Element(object):
 
     def click(self):
         element = self.get_element()
+        log.message("Clicking at element '" + self.name + "'")
         element.click()
+
+    def clickAppium(self, context_view = None):
+        self.__check_and_switch_context(context_view)
+        element = self.get_element_appium()
+        log.message("Clicking at element '" + self.name + "'")
+        element.click()
+
+    def tap(self):
+        element = self.get_element_appium(self.seletor)
+        log.message("Clicking at element '" + self.name + "'")
+        element.tap()
 
     def is_available(self, timeout=5):
         # noinspection PyBroadException
@@ -50,8 +76,9 @@ class Element(object):
             if fail:
                 log.message("[PASSED] '" + self.name + "' was displayed")
             return True
-        except Exception:
+        except Exception as ex:
             if fail:
+                log.message(ex)
                 log.message("[FAILED] '" + self.name + "' was not displayed")
                 raise
             return False
@@ -82,25 +109,39 @@ class Element(object):
             element = WebDriverWait(self.context.browser, timeout).until(ec.element_to_be_clickable((self.by, self.seletor)))
             element.click()
         except Exception:
-            log.log_message("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
+            log.message("After '" + str(timeout) + "' secconds the element '" + self.name + "' was not displayed")
             raise
 
-    # TODO: Inlcude By option thru parameter instead of hardcoded find_element_by_xpath
     def wait_for_invisible(self, timeout=20):
-        element = self.context.browser.find_element_by_xpath(self.seletor)
-        attempt = 0
-
-        while attempt < timeout:
-            if not element.is_displayed():
-                return
-            else:
-                attempt += 1
+        WebDriverWait(self.context.browser, timeout).until(
+            ec.invisibility_of_element_located((self.by, self.seletor)))
         raise Exception("After '" + str(timeout) + "' secconds the element '"
                         + self.name + "' is stiil being displayed")
+
+    def wait_for_text(self, expected_text, attempts = 5):
+        attempt = 0
+        while attempt < attempts:
+            if self.get_text() ==  expected_text:
+                break
+            else:
+                attempt = attempt + 1
+                log.message("Waiting for text '" + expected_text + "' attempt '" + str(attempt) + "' of '" + str(attempts) + "'")
+                time.sleep(3)
 
     def get_text(self):
         element = self.get_element()
         return element.text
+
+    def get_textbox_value(self, context_view = None):
+        self.__check_and_switch_context(context_view)
+        element = self.get_element()
+        return element.get_attribute('value')
+
+    def get_selected_text(self, context_view = None):
+        self.__check_and_switch_context(context_view)
+        element = self.get_element()
+        select = Select(element)
+        return select.first_selected_option.text
 
     def type(self, keys):
         element = self.get_element()
@@ -127,3 +168,8 @@ class Element(object):
     def send_keys(self, keys):
         element = self.get_element()
         return element.send_keys(keys)
+
+    def __check_and_switch_context(self, context_view):
+        if context_view is not None and context_view not in self.context.browser.context:
+            #if context_view not in self.context.browser.context:
+            self.context.browser.switch_to.context(context_view)

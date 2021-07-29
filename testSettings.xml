@@ -5,5 +5,8 @@
 		<appActivity>LoginActivity</appActivity>
 		<platformName>Android</platformName>
 		<deviceName>Nexus_6</deviceName>
+		<udidfisico>062e1b970405</udidfisico>
+		<udidemulador>emulator-5554</udidemulador>
+		<device>emulador</device>
 	</appiumSettings>
 </testSettings>

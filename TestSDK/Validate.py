@@ -10,7 +10,7 @@ def __treat_failure(fail, ex):
         print(ex.args[0][start_index:None])
 
 
-def IsEqual(actual, expected, name, fail = False):
+def IsEqual(actual, expected, name, fail = True):
     try:
         assert_equal(actual, expected, "[FAILED] '%s' Expected [%s] Actual [%s]" % (name, expected, actual))
         log.message("[PASSED] '" + name + "' Expected [" + expected + "] Actual [" + actual + "]")
